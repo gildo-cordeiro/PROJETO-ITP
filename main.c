@@ -89,5 +89,7 @@ int main(void) {
     **/
     calcModelSIR(model);
 
+    fclose(arquivo);
+
 	return 0;
 }

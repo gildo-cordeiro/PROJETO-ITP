@@ -21,7 +21,7 @@ SIR *allocateMemory(int size_suc, int size_inf, int size_rem){
     if(size_inf != -1)   
         model->inf = malloc(size_inf * sizeof(float));
     
-    if(size_rem != 1)
+    if(size_rem != -1)
         model->rem = malloc(size_inf * sizeof(float));
 
     return model;
@@ -36,9 +36,8 @@ SIR *allocateMemory(int size_suc, int size_inf, int size_rem){
 * Descrição: Responsável por preencher o vetor que foi recebido no paramtro *vetor
 * */
 void fillVector(float *vetor, int size){
-    for(int i = 1; i <= size; i++){
+    for(int i = 1; i <= size; i++)
        vetor[i] = (float) i;
-    }
 }
 
 /**
@@ -51,12 +50,12 @@ void fillVector(float *vetor, int size){
 * cada individuo;
 * */
 void calcModelSIR(SIR *model){
-    float *suc, *inf, *rem;
-    float tempo[504], tmp = 0;
+    float *suc, *inf, *rem, *tempo, tmp = 0;
 
-    suc = calloc(504, sizeof(float));
-    inf = calloc(504, sizeof(float));   
-    rem = calloc(504, sizeof(float));
+    suc   = malloc(5040 * sizeof(float));
+    inf   = malloc(5040 * sizeof(float));   
+    rem   = malloc(5040 * sizeof(float));
+    tempo = malloc(5040 * sizeof(float));
 
 
     suc[0] = (model->suc[69-1] - model->h * model->b * (model->suc[69-1]) * (model->inf[3-1])); 
@@ -67,7 +66,7 @@ void calcModelSIR(SIR *model){
     // printf("I %.4f\n", inf[0]);
     // printf("R %.7f\n", rem[0]);
     int count = 1;
-    while(tempo[count] < 45){
+    while(count < 5041){
         suc[count] = (suc[count-1] - model->h * model->b * (suc[count-1]) * (inf[count-1]));
         rem[count] = rem[count-1] + (model->h * model->k * inf[count-1]);    
         inf[count] = inf[count-1] + (model->h * ((model->b * suc[count-1] * inf[count-1]) - (model->k * inf[count-1])));
@@ -76,8 +75,31 @@ void calcModelSIR(SIR *model){
         tempo[count] = tmp;
         count++; 
     }
-    for(int i = 0; i < 44; i++){
-        printf("%.3f, %.4f, %f, %.1f\n", suc[i], inf[i], rem[i], tempo[i+1]);
-    }
+    writeFile(suc, inf, rem, tempo);
 }
 
+/**
+* Função: writeFile
+* Parametros:
+*  - *suc:ponteira para o vetor de pessoas sucetiveis 
+*  - *inf:ponteira para o vetor de pessoas infectadas
+*  - *rem:ponteira para o vetor de pessoas removidas
+*  - *t  :ponteiro para o vetor que armazena a variação de temo (0.1)
+* Retorno: void
+* Descrição: Responsável por escrever os dados calculados da equação SIR em um arquivo .csv externo
+* */
+void writeFile(float *suc, float *inf, float *rem, float *t){
+    int qntLinha = 5041;
+    
+    FILE *saida = fopen("saida.csv", "w+");
+    
+    if(saida == NULL){
+        printf("Erro ao abrir o arquivo\n");
+        exit(1);
+    }
+
+    for(int i = 0;i < qntLinha-1;i++){
+        fprintf(saida, "%f,%f,%f,%.1f\n", suc[i], inf[i], rem[i], t[i+1]);
+    }
+    fclose(saida);
+}

@@ -5,9 +5,11 @@
 
 // float funcTempo(float *tmp, float h, float t);
 
-float calclModelSIR(SIR model);
+void fillVector(float *vetor, int size);
 
-void allocateMemory(SIR *model, int size, int type);
+SIR *allocateMemory(int size_suc, int size_inf, int size_rem);
+
+void calcModelSIR(SIR *model);
 
 // float funcInfectados(float *I, float b, float h, float k, int t);
 

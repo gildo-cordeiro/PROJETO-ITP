@@ -57,14 +57,10 @@ void calcModelSIR(SIR *model){
     rem   = malloc(5040 * sizeof(float));
     tempo = malloc(5040 * sizeof(float));
 
-
-    suc[0] = (model->suc[69-1] - model->h * model->b * (model->suc[69-1]) * (model->inf[3-1])); 
+    suc[0] = model->suc[69-1] - model->h * model->b * (model->suc[69-1]) * (model->inf[3-1]); 
     rem[0] = model->rem[1-1] + (model->h * model->k * model->inf[3-1]);    
     inf[0] = model->inf[3-1] + (model->h * ((model->b * model->suc[69-1] * model->inf[3-1]) - (model->k * model->inf[3-1])));
 
-    // printf("S %.3f\n", suc[0]);
-    // printf("I %.4f\n", inf[0]);
-    // printf("R %.7f\n", rem[0]);
     int count = 1;
     while(count < 5041){
         suc[count] = (suc[count-1] - model->h * model->b * (suc[count-1]) * (inf[count-1]));
@@ -75,7 +71,7 @@ void calcModelSIR(SIR *model){
         tempo[count] = tmp;
         count++; 
     }
-    writeFile(suc, inf, rem, tempo);
+    writeFile(suc, inf, rem, tempo, model);
     free(suc);
     free(inf);
     free(rem);
@@ -91,7 +87,7 @@ void calcModelSIR(SIR *model){
 * Retorno: void
 * Descrição: Responsável por escrever os dados calculados da equação SIR em um arquivo .csv externo
 * */
-void writeFile(float *suc, float *inf, float *rem, float *t){
+void writeFile(float *suc, float *inf, float *rem, float *t, SIR *model){
     int qntLinha = 5041;
     
     FILE *saida = fopen("saida.csv", "w+");
@@ -100,6 +96,7 @@ void writeFile(float *suc, float *inf, float *rem, float *t){
         printf("Erro ao abrir o arquivo\n");
         exit(1);
     }
+    fprintf(saida, "%.1f,%.1f,%.1f,%.1f\n", model->suc[68], inf[2], rem[0], t[0]);
     for(int i = 0;i < qntLinha-1;i++){
         fprintf(saida, "%f,%f,%f,%.1f\n", suc[i], inf[i], rem[i], t[i+1]);
     }

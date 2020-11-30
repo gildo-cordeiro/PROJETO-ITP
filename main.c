@@ -7,7 +7,7 @@
 int main(void) {
 
     /** Carregando arquivo **/
-  	FILE *arquivo = fopen("parametros.txt","r");
+  	FILE *arquivo = fopen("entrada.txt","r");
 
     /** Verificando carregou o arquio corretamente **/
   	if (arquivo == NULL){

@@ -96,7 +96,6 @@ void writeFile(float *suc, float *inf, float *rem, float *t, SIR *model){
         printf("Erro ao abrir o arquivo\n");
         exit(1);
     }
-    fprintf(saida, "SUCETIVEIS, INFECTADOS, REMOVIDOS, TEMPO\n");
     fprintf(saida, "%.1f,%.1f,%.1f,%.1f\n", model->suc[68], inf[2], rem[0], t[0]);
     for(int i = 0;i < qntLinha-1;i++){
         fprintf(saida, "%f,%f,%f,%.1f\n", suc[i], inf[i], rem[i], t[i+1]);

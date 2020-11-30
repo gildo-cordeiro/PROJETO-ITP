@@ -90,6 +90,9 @@ int main(void) {
     calcModelSIR(model);
 
     fclose(arquivo);
-
+    free(model->suc);
+    free(model->inf);
+    free(model->rem);
+    free(model);
 	return 0;
 }

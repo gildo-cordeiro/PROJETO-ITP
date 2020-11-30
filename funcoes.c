@@ -76,6 +76,9 @@ void calcModelSIR(SIR *model){
         count++; 
     }
     writeFile(suc, inf, rem, tempo);
+    free(suc);
+    free(inf);
+    free(rem);
 }
 
 /**
@@ -97,7 +100,6 @@ void writeFile(float *suc, float *inf, float *rem, float *t){
         printf("Erro ao abrir o arquivo\n");
         exit(1);
     }
-
     for(int i = 0;i < qntLinha-1;i++){
         fprintf(saida, "%f,%f,%f,%.1f\n", suc[i], inf[i], rem[i], t[i+1]);
     }

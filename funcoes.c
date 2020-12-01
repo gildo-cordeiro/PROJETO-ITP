@@ -49,7 +49,7 @@ void fillVector(float *vetor, int size){
 * Descrição: Responsável por efetuar o calculo da equação que disponibilizara a quantidade de grupos de cada
 * cada individuo;
 * */
-void calcModelSIR(SIR *model, Cenario *cenario){
+void calcModelSIR(SIR *model){
     float *suc, *inf, *rem, *tempo, tmp = 0;
 
     suc   = malloc(5040 * sizeof(float));
@@ -63,9 +63,9 @@ void calcModelSIR(SIR *model, Cenario *cenario){
 
     int count = 1;
     while(count < 5041){
-        suc[count] = suc[count-1] -  model->h * chooseB(count, cenario) * (suc[count-1]) * (inf[count-1]);
-        rem[count] = rem[count-1] + (model->h * chooseK(count, cenario) * inf[count-1]);    
-        inf[count] = inf[count-1] + (model->h * ((chooseB(count, cenario) * suc[count-1] * inf[count-1]) - (chooseK(count, cenario) * inf[count-1])));
+        suc[count] = (suc[count-1] - model->h * model->b * (suc[count-1]) * (inf[count-1]));
+        rem[count] = rem[count-1] + (model->h * model->k * inf[count-1]);    
+        inf[count] = inf[count-1] + (model->h * ((model->b * suc[count-1] * inf[count-1]) - (model->k * inf[count-1])));
         
         tmp += model->h;        
         tempo[count] = tmp;
@@ -101,17 +101,4 @@ void writeFile(float *suc, float *inf, float *rem, float *t, SIR *model){
         fprintf(saida, "%f,%f,%f,%.1f\n", suc[i], inf[i], rem[i], t[i+1]);
     }
     fclose(saida);
-}
-
-int chooseB(float nowtime, Cenario *c){
-    int tb0, b;
-    nowtime == c->b.tb ? tb0 = c->b.T_b2 : c->b.T_b;
-    b = c->b.N_b/(tb0 * c->b.S_b0 * c->b.I_b0);
-    return b;
-}
-int chooseK(float nowtime, Cenario *c){
-    int tk0, k;
-    nowtime == c->k.tk ? tk0 = c->k.T_k2 : c->k.T_k;
-    k = c->k.m_k/(c->k.n_k * tk0);
-    return k;
 }

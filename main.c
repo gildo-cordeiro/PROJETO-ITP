@@ -21,7 +21,6 @@ int main(void) {
 
     /** Ponteiro do tipo SIR que possui os objetos sucetiveis, infectados e removidos **/
     SIR *model;
-    Cenario *cenario = malloc(sizeof(Cenario));
 
   	char comando[10];
     while (fscanf(arquivo, "%s", comando) != EOF){
@@ -97,24 +96,11 @@ int main(void) {
     model->b = b;
     model->t = t;
 
-    cenario->b.N_b   = N_b;
-    cenario->b.T_b   = T_b;
-    cenario->b.S_b0  = S_b0;
-    cenario->b.I_b0  = I_b0;
-    cenario->b.T_b2  = T_b2;
-    cenario->b.tb    = tb;
-
-    cenario->k.m_k   = m_k;
-    cenario->k.n_k   = n_k;
-    cenario->k.T_k   = T_k;
-    cenario->k.T_k2  = T_k2;
-    cenario->k.tk    = tk;
-
     /** 
     * Realizando o calculo da equaação e descobrindo o valores correspondentes as pessoas sucetives,
     * infectadas e removidas
     **/
-    calcModelSIR(model, cenario);
+    calcModelSIR(model);
 
     fclose(arquivo);
     free(model->suc);

@@ -16,12 +16,12 @@ int main(void) {
     exit(1);
   }else{
     /** Variveis auxiliares para armazenar os valores do arquivo **/
-    float h, b, k, N_b, T_b, S_b0, I_b0, m_k, n_k, T_k, T_b2, T_k2, tb, tk;
+    float N_b, T_b, S_b0, I_b0, m_k, n_k, T_k, T_b2, T_k2, h, tb, tk, b, k;
     int s = -1, i = -1, r = -1, tempo;
 
     /** Ponteiro do tipo SIR que possui os objetos sucetiveis, infectados e removidos **/
     SIR *model;
-    Cenario *cenario = malloc(sizeof(Cenario));
+    Cenario *cenario;
 
     char comando[10];
     while (fscanf(arquivo, "%s", comando) != EOF){
@@ -74,51 +74,16 @@ int main(void) {
         fscanf(arquivo,"%f", &tk);
       }
     }
-
-    printf("ctb %f, ctk %f\n", tb, tk);
-    
-    /** Alocando memoria para os vetores dentro do objeto model **/
-    model = allocateMemory(s, i, r);
-
-    /** Preenchendo os vetores de acordo com o tamanho lido do arquivo **/
-    fillVector(model->suc, s);
-
-    fillVector(model->inf, i);
-
-    fillVector(model->rem, r);
-
-    /** Calculo das variaveis b e k da equação **/
     b = N_b/(T_b * S_b0 * I_b0);
-
     k = m_k/(n_k * T_k);
+    
+    model = createModel(s, i, r, h, k, b, tempo);
 
-    model->h = h;
-    model->k = k;
-    model->b = b;
-    model->t = tempo;
-
-    cenario->b.N_b   = N_b;
-    cenario->b.T_b   = T_b;
-    cenario->b.S_b0  = S_b0;
-    cenario->b.I_b0  = I_b0;
-    cenario->b.T_b2  = T_b2;
-    cenario->b.tb    = tb;
-
-    cenario->k.m_k   = m_k;
-    cenario->k.n_k   = n_k;
-    cenario->k.T_k   = T_k;
-    cenario->k.T_k2  = T_k2;
-    cenario->k.tk    = tk;
-    /** 
-    * Realizando o calculo da equaação e descobrindo o valores correspondentes as pessoas sucetives,
-    * infectadas e removidas
-    **/
+    cenario = createCenario(T_b, S_b0, I_b0, T_b2, tb, m_k, n_k, T_k, T_k2, tk);
+    
     calcModelSIR(model, cenario);
 
     fclose(arquivo);
-    free(model->suc);
-    free(model->inf);
-    free(model->rem);
     free(model);
   }
 	return 0;

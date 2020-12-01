@@ -2,9 +2,8 @@
 #define tipos_h
 
 typedef struct{
-    float *suc,*inf, *rem;
+    int suc, inf, rem, t;
     float h, b, k;
-    int t;
 }SIR;
 
 typedef struct{

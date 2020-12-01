@@ -4,9 +4,9 @@
 #include <stdio.h>
 #include "tipos.h" 
 
-void fillVector(float *vetor, int size);
+SIR *createModel(int suc, int inf, int rem, float h, float k, float b, int t);
 
-SIR *allocateMemory(int size_suc, int size_inf, int size_rem);
+Cenario *createCenario(float T_b, float S_b0, float I_b0, float T_b2, float tb, float m_k, float n_k, float T_k, float T_k2, float tk);
 
 void calcModelSIR(SIR *model, Cenario *c);
 

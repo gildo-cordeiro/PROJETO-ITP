@@ -17,44 +17,40 @@ FILE *selectFileToOpen(int c){
     }
     return arquivo;
 }
-/**
-* Função: allocateMemory
-* Parametros:
-*  - s: quantidade de elementos sucetiveis
-*  - i: quantidade de elementos infectados
-*  - r: quantidade de elementos removidos
-* Retorno: SIR *
-* Descrição: Responsável por alocar memoria para os vetores das populações que se encontram dentro do
-* objeto model, assim como alicar memoria para o mesmo
-**/
-SIR *allocateMemory(int size_suc, int size_inf, int size_rem){
+
+SIR *createModel(int s, int i, int r, float h, float k, float b, int t){
     SIR *model = malloc(sizeof(SIR));
 
-    if(size_suc != -1)
-        model->suc = malloc(size_suc * sizeof(float));
-    
-    if(size_inf != -1)   
-        model->inf = malloc(size_inf * sizeof(float));
-    
-    if(size_rem != -1)
-        model->rem = malloc(size_inf * sizeof(float));
+    model->suc = s;
+    model->inf = i;
+    model->rem = r;
+
+    model->h = h;
+    model->k = k;
+    model->b = b;
+    model->t = t;
 
     return model;
 }
 
-/**
-* Função: fillVector
-* Parametros:
-*  - *vetor: ponteiro do tipo float referente ao vetor que deve ser preenchido
-*  - size: quantidade de elementos que irão popular o vetor
-* Retorno: void
-* Descrição: Responsável por preencher o vetor que foi recebido no paramtro *vetor
-* */
-void fillVector(float *vetor, int size){
-    for(int i = 1; i <= size; i++)
-       vetor[i] = (float) i;
-}
+Cenario *createCenario(float T_b, float S_b0, float I_b0, float T_b2, float tb, float m_k, float n_k, float T_k, float T_k2, float tk){
+    Cenario *cenario = malloc(sizeof(Cenario));
 
+    cenario->b.T_b   = T_b;
+    cenario->b.S_b0  = S_b0;
+    cenario->b.I_b0  = I_b0;
+    cenario->b.T_b2  = T_b2;
+    cenario->b.tb    = tb;
+
+    cenario->k.m_k   = m_k;
+    cenario->k.n_k   = n_k;
+    cenario->k.T_k   = T_k;
+    cenario->k.T_k2  = T_k2;
+    cenario->k.tk    = tk;
+
+    return cenario;
+}
+  
 /**
 * Função: calcModelSIR;
 * Parametros:
@@ -67,24 +63,23 @@ void fillVector(float *vetor, int size){
 void calcModelSIR(SIR *model, Cenario *c){
     float *suc, *inf, *rem, *tempo, tmp = 0;
 
-    suc   = malloc(5040 * sizeof(float));
-    inf   = malloc(5040 * sizeof(float));   
-    rem   = malloc(5040 * sizeof(float));
-    tempo = malloc(5040 * sizeof(float));
+    suc   = malloc((model->t * 24 * 10) * sizeof(float));
+    inf   = malloc((model->t * 24 * 10) * sizeof(float));   
+    rem   = malloc((model->t * 24 * 10) * sizeof(float));
+    tempo = malloc((model->t * 24 * 10) * sizeof(float));
 
     int b = chooseB(c);
     int k = chooseK(c);
     float c_tb = c->b.tb;
     float c_tk = c->k.tk;
-    printf("ctb %f, ctk %f, tmp %f\n", c_tb, c_tk, tmp);
 
-    suc[0] = model->suc[69-1] - model->h * model->b * (model->suc[69-1]) * (model->inf[3-1]); 
-    rem[0] = model->rem[1-1] + (model->h * model->k * model->inf[3-1]);    
-    inf[0] = model->inf[3-1] + (model->h * ((model->b * model->suc[69-1] * model->inf[3-1]) - (model->k * model->inf[3-1])));
-
+    suc[0] = (float) model->suc - (model->h * (model->b * (float) model->suc * (float) model->inf)); 
+    rem[0] = (float) model->rem + (model->h * model->k * (float) model->inf);    
+    inf[0] = (float) model->inf + (model->h * ((model->b * (float) model->suc * (float) model->inf) - (model->k * (float) model->inf)));
+    printf("dale %f\n", model->b);
     int count = 1;
     float horas = model->t * 24;
-    
+
     while(tmp < horas){
         suc[count] = (suc[count-1] - model->h * (c_tb == tmp && c_tb != 0 ? b : model->b) * (suc[count-1]) * (inf[count-1]));
         rem[count] = rem[count-1] + (model->h * (c_tk == tmp && c_tk != 0 ? k : model->k)  * inf[count-1]);    
@@ -119,7 +114,7 @@ void writeFile(float *suc, float *inf, float *rem, float *t, SIR *model){
         printf("Erro ao abrir o arquivo\n");
         exit(1);
     }
-    fprintf(saida, "%.1f,%.1f,%.1f,%.1f\n", model->suc[68], inf[2], rem[0], t[0]);
+    fprintf(saida, "%i,%i,%i,%.1f\n", model->suc, model->inf, model->rem, t[0]);
     for(int i = 0;i < qntLinha-1;i++){
         fprintf(saida, "%f,%f,%f,%.1f\n", suc[i], inf[i], rem[i], t[i+1]);
     }

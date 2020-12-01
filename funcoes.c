@@ -2,6 +2,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+FILE *selectFileToOpen(int c){
+    /** Carregando arquivo **/
+  	FILE *arquivo;
+    if (c == 0){
+        arquivo = fopen("cenario.txt","r");
+    }else if(c == 1){
+        arquivo = fopen("cenario_2.txt","r");
+    }else if(c == 2){
+        arquivo = fopen("cenario_3.txt","r");
+    }else{
+        arquivo = NULL;
+    }
+    return arquivo;
+}
 /**
 * Função: allocateMemory
 * Parametros:
@@ -49,7 +64,7 @@ void fillVector(float *vetor, int size){
 * Descrição: Responsável por efetuar o calculo da equação que disponibilizara a quantidade de grupos de cada
 * cada individuo;
 * */
-void calcModelSIR(SIR *model){
+void calcModelSIR(SIR *model, Cenario *c){
     float *suc, *inf, *rem, *tempo, tmp = 0;
 
     suc   = malloc(5040 * sizeof(float));
@@ -57,15 +72,23 @@ void calcModelSIR(SIR *model){
     rem   = malloc(5040 * sizeof(float));
     tempo = malloc(5040 * sizeof(float));
 
+    int b = chooseB(c);
+    int k = chooseK(c);
+    float c_tb = c->b.tb;
+    float c_tk = c->k.tk;
+    printf("ctb %f, ctk %f, tmp %f\n", c_tb, c_tk, tmp);
+
     suc[0] = model->suc[69-1] - model->h * model->b * (model->suc[69-1]) * (model->inf[3-1]); 
     rem[0] = model->rem[1-1] + (model->h * model->k * model->inf[3-1]);    
     inf[0] = model->inf[3-1] + (model->h * ((model->b * model->suc[69-1] * model->inf[3-1]) - (model->k * model->inf[3-1])));
 
     int count = 1;
-    while(count < 5041){
-        suc[count] = (suc[count-1] - model->h * model->b * (suc[count-1]) * (inf[count-1]));
-        rem[count] = rem[count-1] + (model->h * model->k * inf[count-1]);    
-        inf[count] = inf[count-1] + (model->h * ((model->b * suc[count-1] * inf[count-1]) - (model->k * inf[count-1])));
+    float horas = model->t * 24;
+    
+    while(tmp < horas){
+        suc[count] = (suc[count-1] - model->h * (c_tb == tmp && c_tb != 0 ? b : model->b) * (suc[count-1]) * (inf[count-1]));
+        rem[count] = rem[count-1] + (model->h * (c_tk == tmp && c_tk != 0 ? k : model->k)  * inf[count-1]);    
+        inf[count] = inf[count-1] + (model->h * (((c_tb == tmp && c_tb != 0 ? b : model->b)  * suc[count-1] * inf[count-1]) - ((c_tk == tmp && c_tk != 0  ? k : model->k) * inf[count-1])));
         
         tmp += model->h;        
         tempo[count] = tmp;
@@ -102,3 +125,16 @@ void writeFile(float *suc, float *inf, float *rem, float *t, SIR *model){
     }
     fclose(saida);
 }
+
+int chooseB(Cenario *c){
+    int tb0, b;
+    c->b.T_b2 == 0 ? tb0 = c->b.T_b : c->b.T_b2;
+    b = c->b.N_b/(tb0 * c->b.S_b0 * c->b.I_b0);
+    return b;
+}
+int chooseK(Cenario *c){
+    int tk0, k;
+    c->k.T_k2 == 0 ? tk0 = c->k.T_k : c->k.T_k2;
+    k = c->k.m_k/(c->k.n_k * tk0);
+    return k;
+} 

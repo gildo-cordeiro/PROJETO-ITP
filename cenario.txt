@@ -9,4 +9,8 @@ I_b0 50
 m_k 6
 n_k 22
 T_k 24
-tempo 21
+t 21
+T_b2 28
+T_k2 18
+tb 8.2
+tk 4.5

@@ -76,7 +76,7 @@ void calcModelSIR(SIR *model, Cenario *c){
     suc[0] = (float) model->suc - (model->h * (model->b * (float) model->suc * (float) model->inf)); 
     rem[0] = (float) model->rem + (model->h * model->k * (float) model->inf);    
     inf[0] = (float) model->inf + (model->h * ((model->b * (float) model->suc * (float) model->inf) - (model->k * (float) model->inf)));
-    printf("dale %f\n", model->b);
+
     int count = 1;
     float horas = model->t * 24;
 

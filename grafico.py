@@ -13,11 +13,11 @@ plot.plot(s, color='#17a589', label='Sucetiveis')
 plot.plot(i, color='red', label='Infectados')
 plot.plot(r, color='#f4d03f', label='Recuperados')
 
+plot.plot(s, 'g')
+plot.plot(i, 'r')
+plot.plot(r, 'y')
+
 plot.grid(True)
 plot.title('MODELO SIR')
 plot.legend()
 plot.show()
-
-plot.plot(s, 'g')
-plot.plot(i, 'r')
-plot.plot(r, 'y')

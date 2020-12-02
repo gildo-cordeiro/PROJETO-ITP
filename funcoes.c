@@ -33,9 +33,10 @@ SIR *createModel(int s, int i, int r, float h, float k, float b, int t){
     return model;
 }
 
-Cenario *createCenario(float T_b, float S_b0, float I_b0, float T_b2, float tb, float m_k, float n_k, float T_k, float T_k2, float tk){
+Cenario *createCenario(float N_b, float T_b, float S_b0, float I_b0, float T_b2, float tb, float m_k, float n_k, float T_k, float T_k2, float tk){
     Cenario *cenario = malloc(sizeof(Cenario));
-
+    
+    cenario->b.N_b   = N_b;
     cenario->b.T_b   = T_b;
     cenario->b.S_b0  = S_b0;
     cenario->b.I_b0  = I_b0;
@@ -50,6 +51,15 @@ Cenario *createCenario(float T_b, float S_b0, float I_b0, float T_b2, float tb, 
 
     return cenario;
 }
+
+ int compare_float(float f1, float f2){
+    float precision = 0.00001;
+    if (((f1 - precision) < f2) && ((f1 + precision) > f2)){
+        return 1;
+    }else{
+        return 0;
+    }
+ }
   
 /**
 * Função: calcModelSIR;
@@ -68,22 +78,27 @@ void calcModelSIR(SIR *model, Cenario *c){
     rem   = malloc((model->t * 24 * 10) * sizeof(float));
     tempo = malloc((model->t * 24 * 10) * sizeof(float));
 
-    int b = chooseB(c);
-    int k = chooseK(c);
-    float c_tb = c->b.tb;
-    float c_tk = c->k.tk;
+    float b = calculateB(c), k = calculateK(c);
 
     suc[0] = (float) model->suc - (model->h * (model->b * (float) model->suc * (float) model->inf)); 
     rem[0] = (float) model->rem + (model->h * model->k * (float) model->inf);    
     inf[0] = (float) model->inf + (model->h * ((model->b * (float) model->suc * (float) model->inf) - (model->k * (float) model->inf)));
 
-    int count = 1;
     float horas = model->t * 24;
 
+    float tmp_b = model->b, tmp_k = model->k;
+
+    int count = 1;
     while(tmp < horas){
-        suc[count] = (suc[count-1] - model->h * (c_tb == tmp && c_tb != 0 ? b : model->b) * (suc[count-1]) * (inf[count-1]));
-        rem[count] = rem[count-1] + (model->h * (c_tk == tmp && c_tk != 0 ? k : model->k)  * inf[count-1]);    
-        inf[count] = inf[count-1] + (model->h * (((c_tb == tmp && c_tb != 0 ? b : model->b)  * suc[count-1] * inf[count-1]) - ((c_tk == tmp && c_tk != 0  ? k : model->k) * inf[count-1])));
+        if(compare_float(c->b.tb, tmp) == 1 && tmp != 0)
+            tmp_b = b;
+
+        if(compare_float(c->k.tk, tmp) == 1 && tmp != 0)
+            tmp_k = k;
+
+        suc[count] = (suc[count-1] - model->h * tmp_b * (suc[count-1]) * (inf[count-1]));
+        rem[count] = rem[count-1] + (model->h * tmp_k  * inf[count-1]);    
+        inf[count] = inf[count-1] + (model->h * ((tmp_b  * suc[count-1] * inf[count-1]) - (tmp_k * inf[count-1])));
         
         tmp += model->h;        
         tempo[count] = tmp;
@@ -106,7 +121,7 @@ void calcModelSIR(SIR *model, Cenario *c){
 * Descrição: Responsável por escrever os dados calculados da equação SIR em um arquivo .csv externo
 * */
 void writeFile(float *suc, float *inf, float *rem, float *t, SIR *model){
-    int qntLinha = 5041;
+    int qntLinha = model->t * 24 * 10;
     
     FILE *saida = fopen("saida.csv", "w+");
     
@@ -115,21 +130,23 @@ void writeFile(float *suc, float *inf, float *rem, float *t, SIR *model){
         exit(1);
     }
     fprintf(saida, "%i,%i,%i,%.1f\n", model->suc, model->inf, model->rem, t[0]);
-    for(int i = 0;i < qntLinha-1;i++){
+    for(int i = 0;i < qntLinha;i++){
         fprintf(saida, "%f,%f,%f,%.1f\n", suc[i], inf[i], rem[i], t[i+1]);
     }
     fclose(saida);
 }
 
-int chooseB(Cenario *c){
-    int tb0, b;
-    c->b.T_b2 == 0 ? tb0 = c->b.T_b : c->b.T_b2;
-    b = c->b.N_b/(tb0 * c->b.S_b0 * c->b.I_b0);
+float calculateB(Cenario *c){
+    float b = 0;
+    if(c->b.T_b2 != 0)
+        b = c->b.N_b/(c->b.T_b2 * c->b.S_b0 * c->b.I_b0);
+
     return b;
 }
-int chooseK(Cenario *c){
-    int tk0, k;
-    c->k.T_k2 == 0 ? tk0 = c->k.T_k : c->k.T_k2;
-    k = c->k.m_k/(c->k.n_k * tk0);
+float calculateK(Cenario *c){
+    float k;
+    if(c->k.T_k2 != 0)
+        k = c->k.m_k/(c->k.n_k * c->k.T_k2);      
+
     return k;
 } 

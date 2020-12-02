@@ -5,11 +5,11 @@
 #include "tipos.h"
 
 int main(void) {
-  int cenario;
+  int c;
   printf("Escolha qual cenario executar: \nCenario 0 (0), Cenario 1 (1), Cenario 2(2).\n");
-  scanf("%i", &cenario);
+  scanf("%i", &c);
 
-  FILE *arquivo = selectFileToOpen(cenario);
+  FILE *arquivo = selectFileToOpen(c);
   
   if (arquivo == NULL){
     printf("Erro ao abrir arquivo");
@@ -17,7 +17,7 @@ int main(void) {
   }else{
     /** Variveis auxiliares para armazenar os valores do arquivo **/
     float N_b, T_b, S_b0, I_b0, m_k, n_k, T_k, T_b2, T_k2, h, tb, tk, b, k;
-    int s = -1, i = -1, r = -1, tempo;
+    int s, i, r, tempo;
 
     /** Ponteiro do tipo SIR que possui os objetos sucetiveis, infectados e removidos **/
     SIR *model;
@@ -76,15 +76,18 @@ int main(void) {
     }
     b = N_b/(T_b * S_b0 * I_b0);
     k = m_k/(n_k * T_k);
-    
+
+    printf("T_b2 %f\n", T_b2);
+    printf("T_k2 %f\n", T_k2);
     model = createModel(s, i, r, h, k, b, tempo);
 
-    cenario = createCenario(T_b, S_b0, I_b0, T_b2, tb, m_k, n_k, T_k, T_k2, tk);
+    cenario = createCenario(N_b, T_b, S_b0, I_b0, T_b2, tb, m_k, n_k, T_k, T_k2, tk);
     
     calcModelSIR(model, cenario);
 
     fclose(arquivo);
     free(model);
+    free(cenario);
   }
 	return 0;
 }

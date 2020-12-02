@@ -131,7 +131,7 @@ void writeFile(float *suc, float *inf, float *rem, float *t, SIR *model){
     }
     fprintf(saida, "%i,%i,%i,%.1f\n", model->suc, model->inf, model->rem, t[0]);
     for(int i = 0;i < qntLinha;i++){
-        fprintf(saida, "%f,%f,%f,%.1f\n", suc[i], inf[i], rem[i], t[i+1]);
+        fprintf(saida, "%2.5f,%2.5f,%2.5f,%.1f\n", suc[i], inf[i], rem[i], t[i+1]);
     }
     fclose(saida);
 }

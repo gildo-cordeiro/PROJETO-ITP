@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include "sir.h"
-#include "csv.h"
+#include "libs.h"
 
 int main(void) {
   int c;
@@ -13,11 +11,11 @@ int main(void) {
     printf("Erro ao abrir arquivo");
     exit(1);
   }else{
-    SIR *model;
-    Cenario *cenario;
+    SIR *model = malloc(sizeof(SIR));
+    Cenario *cenario = malloc(sizeof(SIR));
 
     readFile(model, cenario, arquivo);
-    
+
     calcModelSIR(model, cenario);
 
     fclose(arquivo);

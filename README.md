@@ -3,7 +3,7 @@
 DESCRIÇÃO DO PROJETO
 
 Para exexutar o projeto, em seu diretorio, siga os passos:
-- `gcc -o main.c funcoes.c`
+- `gcc -o main main.c config.c csv.c sir.c`
 - `./main`
 - `python graficos.py`
 

@@ -1,8 +1,6 @@
-#include "sir.h"
+#include "libs.h"
 
-SIR *createModel(int s, int i, int r, float h, float k, float b, int t){
-    SIR *model = malloc(sizeof(SIR));
-
+void fillModel(SIR *model, int s, int i, int r, float h, float k, float b, int t){
     model->suc = s;
     model->inf = i;
     model->rem = r;
@@ -11,6 +9,8 @@ SIR *createModel(int s, int i, int r, float h, float k, float b, int t){
     model->k = k;
     model->b = b;
     model->t = t;
+}
 
-    return model;
+float *createSIRVector(int simulationTime, int hours, int operation){
+    return malloc(simulationTime * hours * operation);
 }

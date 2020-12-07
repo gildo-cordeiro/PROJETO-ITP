@@ -1,7 +1,6 @@
 #ifndef config_h
 #define config_h
-#include <stdio.h>
-#include "sir.h"
+#include "libs.h"
 
 typedef struct{
     float N_b, T_b, S_b0, I_b0, T_b2, tb;
@@ -12,8 +11,8 @@ typedef struct{
 }DataK;
 
 typedef struct{
-    DataB b;
-    DataK k;
+    DataB *b;
+    DataK *k;
 }Cenario;
 
 FILE *selectFileToOpen(int c);

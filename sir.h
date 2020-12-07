@@ -6,6 +6,8 @@ typedef struct{
     float h, b, k;
 }SIR;
 
-SIR *createModel(int suc, int inf, int rem, float h, float k, float b, int t);
+void fillModel(SIR *model, int suc, int inf, int rem, float h, float k, float b, int t);
+
+float *createSIRVector(int simulationTime, int days, int opeation);
 
 #endif

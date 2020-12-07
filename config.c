@@ -1,19 +1,4 @@
-#include "config.h"
-
-FILE *selectFileToOpen(int c){
-    /** Carregando arquivo **/
-  	FILE *arquivo;
-    if (c == 0){
-        arquivo = fopen("cenario.txt","r");
-    }else if(c == 1){
-        arquivo = fopen("cenario_2.txt","r");
-    }else if(c == 2){
-        arquivo = fopen("cenario_3.txt","r");
-    }else{
-        arquivo = NULL;
-    }
-    return arquivo;
-}
+#include "libs.h"
 
 int compare_float(float f1, float f2){
     float precision = 0.00001;
@@ -23,7 +8,6 @@ int compare_float(float f1, float f2){
         return 0;
     }
 }
-  
 
 /**
 * Função: calcModelSIR;
@@ -35,18 +19,19 @@ int compare_float(float f1, float f2){
 * cada individuo;
 * */
 void calcModelSIR(SIR *model, Cenario *c){
-    float *suc, *inf, *rem, *tempo, tmp = 0;
+    float tmp = 0;
+    CSV *csv = createCSV(); 
 
-    suc   = malloc((model->t * 24 * 10) * sizeof(float));
-    inf   = malloc((model->t * 24 * 10) * sizeof(float));   
-    rem   = malloc((model->t * 24 * 10) * sizeof(float));
-    tempo = malloc((model->t * 24 * 10) * sizeof(float));
+    csv->suc   = createSIRVector(model->t, 24, 100000);
+    csv->inf   = createSIRVector(model->t, 24, 100000);  
+    csv->rem   = createSIRVector(model->t, 24, 100000);
+    csv->tempo = createSIRVector(model->t, 24, 100000);
 
     float b = calculateB(c), k = calculateK(c);
 
-    suc[0] = (float) model->suc - (model->h * (model->b * (float) model->suc * (float) model->inf)); 
-    rem[0] = (float) model->rem + (model->h * model->k * (float) model->inf);    
-    inf[0] = (float) model->inf + (model->h * ((model->b * (float) model->suc * (float) model->inf) - (model->k * (float) model->inf)));
+    csv->suc[0] = (float) model->suc - (model->h * (model->b * (float) model->suc * (float) model->inf)); 
+    csv->rem[0] = (float) model->rem + (model->h * model->k * (float) model->inf);    
+    csv->inf[0] = (float) model->inf + (model->h * ((model->b * (float) model->suc * (float) model->inf) - (model->k * (float) model->inf)));
 
     float horas = model->t * 24;
 
@@ -54,22 +39,19 @@ void calcModelSIR(SIR *model, Cenario *c){
 
     int count = 1;
     while(tmp < horas){
-        if(compare_float(c->b.tb, tmp) == 1 && tmp != 0)
+        if(compare_float(c->b->tb, tmp) == 1 && tmp != 0)
             tmp_b = b;
 
-        if(compare_float(c->k.tk, tmp) == 1 && tmp != 0)
+        if(compare_float(c->k->tk, tmp) == 1 && tmp != 0)
             tmp_k = k;
 
-        suc[count] = (suc[count-1] - model->h * tmp_b * (suc[count-1]) * (inf[count-1]));
-        rem[count] = rem[count-1] + (model->h * tmp_k  * inf[count-1]);    
-        inf[count] = inf[count-1] + (model->h * ((tmp_b  * suc[count-1] * inf[count-1]) - (tmp_k * inf[count-1])));
+        csv->suc[count] = (csv->suc[count-1] - model->h * tmp_b * (csv->suc[count-1]) * (csv->inf[count-1]));
+        csv->rem[count] = csv->rem[count-1] + (model->h * tmp_k  * csv->inf[count-1]);    
+        csv->inf[count] = csv->inf[count-1] + (model->h * ((tmp_b  * csv->suc[count-1] * csv->inf[count-1]) - (tmp_k * csv->inf[count-1])));
         
         tmp += model->h;        
-        tempo[count] = tmp;
+        csv->tempo[count] = tmp;
         count++; 
     }
-    writeFile(suc, inf, rem, tempo, model);
-    free(suc);
-    free(inf);
-    free(rem);
+    writeFile(csv, model);
 }

@@ -22,10 +22,10 @@ void calcModelSIR(SIR *model, Cenario *c){
     float tmp = 0;
     CSV *csv = createCSV(); 
 
-    csv->suc   = createSIRVector(model->t, 24, 100000);
-    csv->inf   = createSIRVector(model->t, 24, 100000);  
-    csv->rem   = createSIRVector(model->t, 24, 100000);
-    csv->tempo = createSIRVector(model->t, 24, 100000);
+    csv->suc   = createSIRVector(model->t, 24, 10);
+    csv->inf   = createSIRVector(model->t, 24, 10);  
+    csv->rem   = createSIRVector(model->t, 24, 10);
+    csv->tempo = createSIRVector(model->t, 24, 10);
 
     float b = calculateB(c), k = calculateK(c);
 

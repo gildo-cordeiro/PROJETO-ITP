@@ -15,7 +15,7 @@ Nesse modelo, um indivíduo da população S pode permanecer em S ou ir para a p
 - *R(t)=R(t-1)+h.k.I(t-1)*
 - *tempo(t)=tempo(t-1)+h*
 
-`OBS.: O vetor tempo é utilizado para incrementar para armazenar o valor do tempo a cada iteração do laço de repetição`
+`OBS.: O vetor tempo é utilizado para armazenar o valor do tempo a cada iteração do laço de repetição`
 
 Implemente o modelo SIR, isto é, encontre os valores de S(t), I(t) e R(t) ao longo de um determinado período de simulação. A partir do cenário definido pelos parâmetros de entrada do simulador (Cenário 0), rode também dois outros cenário com diferentes estratégias de contenção:
 
@@ -41,3 +41,7 @@ Na pasta onde foi clonado o repositorio execute:
 
 Para gerar o gráfico execute:
 - `python graficos.py`
+
+### **DIFICULDADES**
+
+Nã foi possível adptar o valor da variavel **h** para que se comportadar adequadamente de acordo com os valores das variaveis de control S, I e R. Dessa forma, caso o valor de S seja 50000, por exemplo, o valor de h continua 0.1 e resultado em um erro no momento do calculo. 

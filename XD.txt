@@ -1,5 +1,0 @@
-1. config.h /.c
-- le o arquivo de configuração e cria as structs de configuração
-csv.h / .c
-- escreve o arquivo .csv
-- sir.h / sir.c

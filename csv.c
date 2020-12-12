@@ -1,7 +1,14 @@
 #include "libs.h"
 
+/**
+* Função: selectFileToOpen;
+* Parametros:
+*  - int c: parametro utilizado para escolha do arquivo que será lido.
+* Retorno: FILE *
+* Descrição: Responsável por escolher qual arquivo, que representa o um cenario, deverá ser lido;
+* */
 FILE *selectFileToOpen(int c){
-    /** Carregando arquivo **/
+
   	FILE *arquivo;
     if (c == 0){
         arquivo = fopen("cenario.txt","r");
@@ -15,6 +22,15 @@ FILE *selectFileToOpen(int c){
     return arquivo;
 }
 
+/**
+* Função: readFile;
+* Parametros:
+*  - SIR *model: Objeto com as variaveis com as variaveis da simulação.
+*  - Cenario *cenario: Objeto com as variaveis dos cenarios para simulação.
+*  - FILE *arquivo: Objeto que contem o arquivo de texto com os valores para a simulação.
+* Retorno: void;
+* Descrição: Responsável por ler os valores do txt e calcular o valor de b e k;
+* */
 void readFile(SIR *model, Cenario *cenario, FILE *arquivo){
   /** Variveis auxiliares para armazenar os valores do arquivo **/
   float N_b, T_b, S_b0, I_b0, m_k, n_k, T_k, T_b2, T_k2, h, tb, tk, b, k;
@@ -71,8 +87,11 @@ void readFile(SIR *model, Cenario *cenario, FILE *arquivo){
       fscanf(arquivo,"%f", &tk);
     }
   }
+  // Calculo de b e k para a simulação
   b = N_b/(T_b * S_b0 * I_b0);
   k = m_k/(n_k * T_k);
+
+  // Alocação de memoria para os objetos b e k dentro do objeto Cenario
   cenario->b = malloc(sizeof(DataB));
   cenario->k = malloc(sizeof(DataK));
 
@@ -83,10 +102,8 @@ void readFile(SIR *model, Cenario *cenario, FILE *arquivo){
 /**
 * Função: writeFile
 * Parametros:
-*  - *suc:ponteira para o vetor de pessoas sucetiveis 
-*  - *inf:ponteira para o vetor de pessoas infectadas
-*  - *rem:ponteira para o vetor de pessoas removidas
-*  - *t  :ponteiro para o vetor que armazena a variação de temo (0.1)
+*  - CSV *csv: Objeto com os vetores que serão escritos no csv
+*  - SIR *model: Objeto com os valores da simulação
 * Retorno: void
 * Descrição: Responsável por escrever os dados calculados da equação SIR em um arquivo .csv externo
 * */
@@ -103,9 +120,32 @@ void writeFile(CSV *csv, SIR *model){
     for(int i = 0;i < qntLinha;i++){
         fprintf(saida, "%2.5f,%2.5f,%2.5f,%.1f\n", csv->suc[i], csv->inf[i], csv->rem[i], csv->tempo[i+1]);
     }
-    fclose(saida);
+    //fclose(saida);
+    free(csv->suc);
+    free(csv->inf);
+    free(csv->rem);
+    free(csv->tempo);
+    free(csv);
 }
 
+/**
+* Função: fillCenario
+* Parametros:
+*  - Cenario *cenario: Objeto que será preenchido com os valores dos parametros seguintes.
+*  - float N_b  : variavel do tipo float utilizada no calculo de b. 
+*  - float T_b  : variavel do tipo float utilizada no calculo de b.
+*  - float S_b0 : variavel do tipo float utilizada no calculo de b.
+*  - float I_b0 : variavel do tipo float utilizada no calculo de b.
+*  - float T_b2 : variavel do tipo float utilizada no calculo de b.
+*  - float tb   : variavel do tipo float utilizada no calculo de b.
+*  - float m_k  : variavel do tipo float utilizada no calculo de k.
+*  - float n_k  : variavel do tipo float utilizada no calculo de k.
+*  - float T_k  : variavel do tipo float utilizada no calculo de k.
+*  - float T_k2 : variavel do tipo float utilizada no calculo de k.
+*  - float tk   : variavel do tipo float utilizada no calculo de k.
+* Retorno: void
+* Descrição: Responsável preencher os objetos b (tipo DataB) e k (Tipo DataK) do objeto pai Cenario com os outros paramtros da função
+* */
 void fillCenario(Cenario *cenario, float N_b, float T_b, float S_b0, float I_b0, float T_b2, float tb, float m_k, float n_k, float T_k, float T_k2, float tk){    
   cenario->b->N_b   = N_b;
   cenario->b->T_b   = T_b;
@@ -121,6 +161,14 @@ void fillCenario(Cenario *cenario, float N_b, float T_b, float S_b0, float I_b0,
   cenario->k->tk    = tk;
 }
 
+/**
+* Função: calculateB
+* Parametros:
+*  - Cenario *c: Objeto do tipo Canario que será utilizado para recalcular o valor de b. 
+* Retorno: float b
+* Descrição: Responsável por recalcular b caso caso a variavel T_b2 seja diferente de 0, isso quer dizer 
+* que o cenario_2.txt foi escolhido.
+* */
 float calculateB(Cenario *c){
     float b = 0;
     if(c->b->T_b2 != 0)
@@ -128,6 +176,14 @@ float calculateB(Cenario *c){
 
     return b;
 }
+/**
+* Função: calculateK
+* Parametros:
+*  - Cenario *c: Objeto do tipo Canario que será utilizado para recalcular o valor de k. 
+* Retorno: float k
+* Descrição: Responsável por recalcular k caso caso a variavel T_k2 seja diferente de 0, isso quer dizer 
+* que o cenario_3.txt foi escolhido.
+* */
 float calculateK(Cenario *c){
     float k;
     if(c->k->T_k2 != 0)
@@ -135,8 +191,3 @@ float calculateK(Cenario *c){
 
     return k;
 } 
-
-CSV *createCSV(){
-  CSV *csv = malloc(sizeof(CSV));
-  return csv;
-}

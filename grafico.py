@@ -7,15 +7,13 @@ t = [float(line.pop()[:-1]) for line in content]
 s = [float(line[0]) for line in content]
 i = [float(line[1]) for line in content]
 r = [float(line[2]) for line in content]
+v = [x*0.02 for x in r]
 
 plot.figure(figsize=(6, 4))
 plot.plot(s, color='#17a589', label='Sucetiveis')
 plot.plot(i, color='red', label='Infectados')
 plot.plot(r, color='#f4d03f', label='Recuperados')
-
-plot.plot(s, 'g')
-plot.plot(i, 'r')
-plot.plot(r, 'y')
+plot.plot(v, color='blue', label='Recuperados')
 
 plot.grid(True)
 plot.title('MODELO SIR')

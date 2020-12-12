@@ -17,6 +17,4 @@ float calculateK(Cenario *c);
 
 void fillCenario(Cenario *cenario, float N_b, float T_b, float S_b0, float I_b0, float T_b2, float tb, float m_k, float n_k, float T_k, float T_k2, float tk);
 
-CSV *createCSV();
-
 #endif

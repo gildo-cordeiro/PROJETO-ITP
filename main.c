@@ -2,7 +2,7 @@
 
 int main(void) {
   int c;
-  printf("Escolha qual cenario executar: \nCenario 0 (0), Cenario 1 (1), Cenario 2(2).\n");
+  printf("Escolha qual cenario executar: \nCenario 0 (0), Cenario 1 (1), Cenario 2 (2).\n");
   scanf("%i", &c);
   
   FILE *arquivo = selectFileToOpen(c);
